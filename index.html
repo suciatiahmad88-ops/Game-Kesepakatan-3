@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Petualangan Kesepakatan Sekolahku - Kelas 3 SD</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <!-- Google Fonts: Fredoka & Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Fredoka', 'Inter', sans-serif;
+            background: linear-gradient(135deg, #e0f2fe 0%, #fef3c7 100%);
+            min-height: 100vh;
+            user-select: none;
+        }
+        .btn-bounce {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .btn-bounce:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.15);
+        }
+        .btn-bounce:active {
+            transform: translateY(1px);
+        }
+        .custom-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 3px solid #f3f4f6;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        .box-flip {
+            perspective: 1000px;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #fbbf24;
+            border-radius: 10px;
+        }
+        @keyframes pulse-slow {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        .animate-pulse-slow {
+            animation: pulse-slow 2s infinite;
+        }
+    </style>
+</head>
+<body class="text-slate-800 pb-12 flex flex-col min-h-screen">
+
+    <!-- HEADER / NAVIGATION BAR -->
+    <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b-4 border-amber-400 shadow-md">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-2">
+            <!-- Logo / Brand -->
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('beranda')">
+                <div class="bg-amber-400 text-white p-2.5 rounded-2xl shadow-inner text-xl animate-bounce">
+                    <i class="fa-solid fa-school-flag"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl md:text-2xl font-bold text-amber-600 leading-tight">Petualangan Kesepakatan</h1>
+                    <p class="text-xs text-slate-500 font-semibold">Kesepakatan Bersama di Sekolahku • SD Kelas 3</p>
+                </div>
+            </div>
+
+            <!-- Stats Bar -->
+            <div class="flex items-center space-x-3 bg-amber-50 px-4 py-2 rounded-2xl border-2 border-amber-200 shadow-sm">
+                <div class="flex items-center text-amber-600 font-bold text-sm md:text-base">
+                    <i class="fa-solid fa-star text-amber-400 mr-1.5 text-xl animate-pulse"></i>
+                    <span id="global-score">0</span> XP
+                </div>
+                <div class="h-5 w-0.5 bg-amber-300"></div>
+                <div class="flex items-center text-emerald-600 font-bold text-sm md:text-base">
+                    <i class="fa-solid fa-award text-emerald-500 mr-1.5 text-xl"></i>
+                    <span id="badge-count">0</span> Lencana
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Buttons -->
+        <nav class="bg-amber-400 px-2 py-1.5 shadow-inner">
+            <div class="max-w-6xl mx-auto flex justify-around md:justify-center md:space-x-3 overflow-x-auto py-1 text-sm md:text-base">
+                <button onclick="switchTab('beranda')" id="nav-beranda" class="nav-btn px-3.5 py-1.5 rounded-xl font-bold text-white hover:bg-amber-500 transition flex items-center space-x-1.5 bg-amber-600 shadow-sm">
+                    <i class="fa-solid fa-house"></i><span>Beranda</span>
+                </button>
+                <button onclick="switchTab('materi')" id="nav-materi" class="nav-btn px-3.5 py-1.5 rounded-xl font-bold text-white hover:bg-amber-500 transition flex items-center space-x-1.5">
+                    <i class="fa-solid fa-book-open"></i><span>Materi</span>
+                </button>
+                <button onclick="switchTab('simulasi')" id="nav-simulasi" class="nav-btn px-3.5 py-1.5 rounded-xl font-bold text-white hover:bg-amber-500 transition flex items-center space-x-1.5">
+                    <i class="fa-solid fa-flask"></i><span>Simulasi</span>
+                </button>
+                <button onclick="switchTab('permainan')" id="nav-permainan" class="nav-btn px-3.5 py-1.5 rounded-xl font-bold text-white hover:bg-amber-500 transition flex items-center space-x-1.5">
+                    <i class="fa-solid fa-gamepad"></i><span>Permainan</span>
+                </button>
+                <button onclick="switchTab('kuis')" id="nav-kuis" class="nav-btn px-3.5 py-1.5 rounded-xl font-bold text-white hover:bg-amber-500 transition flex items-center space-x-1.5">
+                    <i class="fa-solid fa-pen-to-square"></i><span>Kuis</span>
+                </button>
+                <button onclick="switchTab('hasil')" id="nav-hasil" class="nav-btn px-3.5 py-1.5 rounded-xl font-bold text-white hover:bg-amber-500 transition flex items-center space-x-1.5">
+                    <i class="fa-solid fa-trophy"></i><span>Hasil</span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="max-w-5xl mx-auto px-4 py-6 flex-grow w-full">
+
+        <!-- 🏠 TAB: BERANDA -->
+        <section id="tab-beranda" class="tab-content space-y-6">
+            <div class="custom-card rounded-3xl p-6 md:p-10 text-center relative overflow-hidden">
+                <div class="absolute -right-10 -bottom-10 opacity-10 text-amber-500 text-9xl pointer-events-none">
+                    <i class="fa-solid fa-hands-holding-circle"></i>
+                </div>
+                <span class="bg-amber-100 text-amber-800 text-xs md:text-sm font-bold px-4 py-1.5 rounded-full inline-block mb-3 border border-amber-300">
+                    Pendidikan Pancasila SD Kelas 3
+                </span>
+                <h2 class="text-3xl md:text-5xl font-extrabold text-slate-800 mb-4 leading-tight">
+                    Mari Belajar <span class="text-amber-500">Kesepakatan Bersama</span> di Sekolahku!
+                </h2>
+                <p class="text-slate-600 text-base md:text-lg max-w-2xl mx-auto mb-8">
+                    Halo sahabat pintar! Selamat datang di petualangan sekolah yang menyenangkan. Di sini kita akan belajar bagaimana membuat kelas jadi damai, indah, dan saling menghargai lewat musyawarah dan aturan bersama!
+                </p>
+
+                <!-- Action Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl mx-auto">
+                    <button onclick="switchTab('materi')" class="btn-bounce bg-emerald-500 hover:bg-emerald-600 text-white p-5 rounded-2xl shadow-lg flex flex-col items-center justify-center space-y-2">
+                        <i class="fa-solid fa-book-bookmark text-3xl"></i>
+                        <span class="font-bold text-lg">Pelajari Materi</span>
+                        <span class="text-xs opacity-90 font-normal">Baca penjelasan seru</span>
+                    </button>
+                    <button onclick="switchTab('simulasi')" class="btn-bounce bg-sky-500 hover:bg-sky-600 text-white p-5 rounded-2xl shadow-lg flex flex-col items-center justify-center space-y-2">
+                        <i class="fa-solid fa-flask-vial text-3xl"></i>
+                        <span class="font-bold text-lg">Coba Simulasi</span>
+                        <span class="text-xs opacity-90 font-normal">Lihat sebab-akibat</span>
+                    </button>
+                    <button onclick="switchTab('permainan')" class="btn-bounce bg-amber-500 hover:bg-amber-600 text-white p-5 rounded-2xl shadow-lg flex flex-col items-center justify-center space-y-2">
+                        <i class="fa-solid fa-puzzle-piece text-3xl"></i>
+                        <span class="font-bold text-lg">Mainkan Game</span>
+                        <span class="text-xs opacity-90 font-normal">Kumpulkan poin & lencana</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Capaian Pembelajaran & Progress Ringkasan -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="custom-card rounded-3xl p-6 border-l-8 border-l-amber-400">
+                    <h3 class="text-xl font-bold text-slate-800 mb-3 flex items-center">
+                        <i class="fa-solid fa-bullseye text-amber-500 mr-2"></i> Tujuan Pembelajaran
+                    </h3>
+                    <ul class="space-y-2 text-slate-600 text-sm md:text-base">
+                        <li class="flex items-start">
+                            <i class="fa-solid fa-check text-emerald-500 mr-2 mt-1"></i>
+                            <span>Memahami pengertian dan pentingnya <strong>kesepakatan bersama</strong> di sekolah.</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa-solid fa-check text-emerald-500 mr-2 mt-1"></i>
+                            <span>Mengetahui cara membuat kesepakatan melalui <strong>musyawarah</strong> yang jujur dan santun.</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa-solid fa-check text-emerald-500 mr-2 mt-1"></i>
+                            <span>Menunjukkan sikap mematuhi aturan serta siap menerima konsekuensi dengan penuh tanggung jawab.</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="custom-card rounded-3xl p-6 border-l-8 border-l-sky-400">
+                    <h3 class="text-xl font-bold text-slate-800 mb-3 flex items-center">
+                        <i class="fa-solid fa-chart-line text-sky-500 mr-2"></i> Progres Belajarmu
+                    </h3>
+                    <p class="text-xs text-slate-500 mb-2">Selesaikan aktivitas di menu Permainan & Kuis untuk mengumpulkan semua lencana!</p>
+                    <div class="w-full bg-slate-200 h-5 rounded-full overflow-hidden mb-3 p-0.5 border border-slate-300">
+                        <div id="overall-progress" class="bg-gradient-to-r from-sky-400 to-amber-400 h-full rounded-full w-0 transition-all duration-500"></div>
+                    </div>
+                    <div class="flex justify-between items-center text-sm font-bold text-slate-600">
+                        <span>Lencana Terkumpul: <span id="progress-badge-text">0/6</span></span>
+                        <span class="text-amber-600 font-extrabold"><span id="progress-percent">0</span>% Selesai</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 📚 TAB: MATERI -->
+        <section id="tab-materi" class="tab-content hidden space-y-6">
+            <div class="bg-amber-50 border-2 border-amber-200 rounded-3xl p-6 shadow-sm">
+                <h2 class="text-2xl md:text-3xl font-extrabold text-amber-700 mb-2 flex items-center">
+                    <i class="fa-solid fa-book-open-reader mr-3"></i> Materi Belajar Interaktif
+                </h2>
+                <p class="text-slate-600 text-sm md:text-base">Pilih topik materi di bawah ini untuk membacanya!</p>
+            </div>
+
+            <!-- Sub Navigasi Materi -->
+            <div class="flex space-x-2 border-b-2 border-slate-200 overflow-x-auto pb-2">
+                <button onclick="showSubMateri('materi-1')" id="subnav-materi-1" class="submateri-btn bg-amber-500 text-white px-4 py-2 rounded-xl font-bold text-sm whitespace-nowrap shadow-sm">
+                    1. Apa Itu Kesepakatan?
+                </button>
+                <button onclick="showSubMateri('materi-2')" id="subnav-materi-2" class="submateri-btn bg-slate-200 text-slate-700 px-4 py-2 rounded-xl font-bold text-sm whitespace-nowrap">
+                    2. Musyawarah Kelas
+                </button>
+                <button onclick="showSubMateri('materi-3')" id="subnav-materi-3" class="submateri-btn bg-slate-200 text-slate-700 px-4 py-2 rounded-xl font-bold text-sm whitespace-nowrap">
+                    3. Manfaat & Akibat
+                </button>
+            </div>
+
+            <!-- Isi Materi 1 -->
+            <div id="materi-1" class="submateri-card custom-card rounded-3xl p-6 space-y-4">
+                <h3 class="text-xl font-bold text-amber-600 flex items-center">
+                    <i class="fa-solid fa-handshake mr-2"></i> Apa Itu Kesepakatan Bersama di Sekolah?
+                </h3>
+                <p class="text-slate-700 leading-relaxed text-sm md:text-base">
+                    <strong>Kesepakatan Bersama</strong> adalah janji atau aturan yang dibuat dan disetujui bersama-sama oleh semua warga kelas (siswa dan guru) untuk dilaksanakan dengan rasa tanggung jawab.
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-4">
+                    <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-4">
+                        <h4 class="font-bold text-emerald-800 mb-2 flex items-center"><i class="fa-solid fa-thumbs-up mr-2"></i> Contoh Kesepakatan Kelas:</h4>
+                        <ul class="list-disc list-inside space-y-1.5 text-sm text-slate-700">
+                            <li>Datang ke sekolah tepat waktu sebelum bel berbunyi.</li>
+                            <li>Mendengarkan saat guru atau teman sedang berbicara.</li>
+                            <li>Menjaga kebersihan meja dan merapikan piket kelas.</li>
+                            <li>Menggunakan bahasa yang sopan dan ramah.</li>
+                        </ul>
+                    </div>
+                    <div class="bg-amber-50 border border-amber-200 rounded-2xl p-4">
+                        <h4 class="font-bold text-amber-800 mb-2 flex items-center"><i class="fa-solid fa-heart mr-2"></i> Mengapa Harus Dibuat Bersama?</h4>
+                        <p class="text-sm text-slate-700 leading-relaxed">
+                            Karena aturan yang dibuat bersama akan terasa adil, tidak memberatkan, dan membuat semua siswa merasa dihargai. Kita pun jadi lebih bersemangat mematuhinya tanpa paksaan!
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Isi Materi 2 -->
+            <div id="materi-2" class="submateri-card hidden custom-card rounded-3xl p-6 space-y-4">
+                <h3 class="text-xl font-bold text-amber-600 flex items-center">
+                    <i class="fa-solid fa-comments mr-2"></i> Musyawarah Untuk Mufakat
+                </h3>
+                <p class="text-slate-700 leading-relaxed text-sm md:text-base">
+                    Kesepakatan sekolah dibuat melalui proses <strong>Musyawarah</strong>. Musyawarah adalah kegiatan berdiskusi bersama untuk menyelesaikan masalah dan mencapai keputusan bersama (mufakat).
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-amber-50 p-4 rounded-2xl border border-amber-200 text-center">
+                        <i class="fa-solid fa-face-smile-beam text-3xl text-amber-500 mb-2"></i>
+                        <h4 class="font-bold text-slate-800 text-sm">1. Sampaikan Pendapat</h4>
+                        <p class="text-xs text-slate-600 mt-1">Sampaikan usulmu dengan tenang dan sopan santun.</p>
+                    </div>
+                    <div class="bg-sky-50 p-4 rounded-2xl border border-sky-200 text-center">
+                        <i class="fa-solid fa-ear-listen text-3xl text-sky-500 mb-2"></i>
+                        <h4 class="font-bold text-slate-800 text-sm">2. Saling Mendengar</h4>
+                        <p class="text-xs text-slate-600 mt-1">Dengarkan teman saat menyampaikan idenya, jangan memotong ucapan.</p>
+                    </div>
+                    <div class="bg-emerald-50 p-4 rounded-2xl border border-emerald-200 text-center">
+                        <i class="fa-solid fa-circle-check text-3xl text-emerald-500 mb-2"></i>
+                        <h4 class="font-bold text-slate-800 text-sm">3. Lapang Dada</h4>
+                        <p class="text-xs text-slate-600 mt-1">Menerima keputusan akhir bersama walau idemu mungkin belum terpilih.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Isi Materi 3 -->
+            <div id="materi-3" class="submateri-card hidden custom-card rounded-3xl p-6 space-y-4">
+                <h3 class="text-xl font-bold text-sky-600 flex items-center">
+                    <i class="fa-solid fa-scale-balanced mr-2"></i> Manfaat Taat & Akibat Melanggar
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-emerald-50 p-4 rounded-2xl border border-emerald-200 space-y-2">
+                        <h4 class="font-bold text-emerald-800 text-base"><i class="fa-solid fa-sun mr-2"></i> Manfaat Mematuhi Aturan:</h4>
+                        <ul class="list-disc list-inside text-sm text-slate-700 space-y-1">
+                            <li>Suasana belajar terasa nyaman dan damai.</li>
+                            <li>Mempunyai banyak teman karena saling menghargai.</li>
+                            <li>Terhindar dari rasa bersalah atau teguran.</li>
+                        </ul>
+                    </div>
+                    <div class="bg-rose-50 p-4 rounded-2xl border border-rose-200 space-y-2">
+                        <h4 class="font-bold text-rose-800 text-base"><i class="fa-solid fa-cloud-showers-heavy mr-2"></i> Akibat Jika Melanggar:</h4>
+                        <ul class="list-disc list-inside text-sm text-slate-700 space-y-1">
+                            <li>Kelas menjadi kotor, bising, dan kacau.</li>
+                            <li>Mengganggu konsentrasi teman lain.</li>
+                            <li>Mendapat konsekuensi/sanksi yang telah disepakati.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 🔬 TAB: SIMULASI INTERAKTIF -->
+        <section id="tab-simulasi" class="tab-content hidden space-y-6">
+            <div class="bg-sky-50 border-2 border-sky-200 rounded-3xl p-6 shadow-sm">
+                <h2 class="text-2xl md:text-3xl font-extrabold text-sky-700 mb-2 flex items-center">
+                    <i class="fa-solid fa-flask-vial mr-3"></i> Simulasi Suasana Kelas
+                </h2>
+                <p class="text-slate-600 text-sm md:text-base">
+                    Pilih kondisi aturan di bawah ini untuk melihat hubungan <strong>sebab-akibat</strong> terhadap kondisi kelas kita secara nyata!
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Control Panel -->
+                <div class="custom-card rounded-3xl p-6 space-y-4">
+                    <h3 class="font-bold text-lg text-slate-800 border-b pb-2 flex items-center">
+                        <i class="fa-solid fa-sliders text-sky-500 mr-2"></i> Atur Kondisi Kelas:
+                    </h3>
+                    
+                    <div class="space-y-4">
+                        <label class="block">
+                            <span class="text-sm font-semibold text-slate-700">1. Kesepakatan Piket Kebersihan:</span>
+                            <select id="sim-piket" onchange="runSimulation()" class="mt-1 block w-full p-3 bg-slate-50 border-2 border-slate-200 rounded-xl font-medium focus:ring-2 focus:ring-sky-400 focus:outline-none">
+                                <option value="taat">Semua Siswa Piket Bersama (Taat)</option>
+                                <option value="langgar">Siswa Acuh & Mengabaikan (Melanggar)</option>
+                            </select>
+                        </label>
+
+                        <label class="block">
+                            <span class="text-sm font-semibold text-slate-700">2. Sikap Berbicara saat Guru/Teman Menjelaskan:</span>
+                            <select id="sim-bicara" onchange="runSimulation()" class="mt-1 block w-full p-3 bg-slate-50 border-2 border-slate-200 rounded-xl font-medium focus:ring-2 focus:ring-sky-400 focus:outline-none">
+                                <option value="santun">Mendengarkan Tertib & Santun (Taat)</option>
+                                <option value="gaduh">Mengobrol & Gaduh Sendiri (Melanggar)</option>
+                            </select>
+                        </label>
+
+                        <label class="block">
+                            <span class="text-sm font-semibold text-slate-700">3. Saling Menghormati Pendapat Teman:</span>
+                            <select id="sim-musyawarah" onchange="runSimulation()" class="mt-1 block w-full p-3 bg-slate-50 border-2 border-slate-200 rounded-xl font-medium focus:ring-2 focus:ring-sky-400 focus:outline-none">
+                                <option value="mufakat">Saling Menghargai & Rukun (Taat)</option>
+                                <option value="paksakan">Egois & Memaksa Kehendak (Melanggar)</option>
+                            </select>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Simulation Result View -->
+                <div id="sim-display" class="custom-card rounded-3xl p-6 flex flex-col justify-between transition-all duration-500 bg-emerald-50 border-2 border-emerald-300">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Hasil Simulasi Kelas</span>
+                            <span id="sim-status-badge" class="px-3 py-1 bg-emerald-200 text-emerald-800 rounded-full font-bold text-xs">Kelas Ideal</span>
+                        </div>
+                        <div class="text-center my-6">
+                            <div id="sim-icon" class="text-7xl mb-4 text-emerald-500 animate-pulse-slow">
+                                <i class="fa-solid fa-face-laugh-beam"></i>
+                            </div>
+                            <h4 id="sim-title" class="text-2xl font-bold text-emerald-800 mb-2">Suasana Kelas Sangat Nyaman!</h4>
+                            <p id="sim-desc" class="text-slate-600 text-sm md:text-base leading-relaxed">
+                                Karena semua warga kelas taat pada kesepakatan bersama, kelas menjadi bersih, tenang, dan semua siswa dapat belajar dengan bahagia!
+                            </p>
+                        </div>
+                    </div>
+                    <div id="sim-feedback" class="p-3 bg-white/90 rounded-2xl border border-emerald-200 text-xs text-emerald-700 font-semibold text-center shadow-sm">
+                        💡 Hubungan Sebab-Akibat: Mematuhi kesepakatan menciptakan kedamaian bersama.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 🎮 TAB: PERMAINAN (TANTANGAN 1 - 5) -->
+        <section id="tab-permainan" class="tab-content hidden space-y-6">
+            <div class="bg-purple-50 border-2 border-purple-200 rounded-3xl p-6 shadow-sm">
+                <h2 class="text-2xl md:text-3xl font-extrabold text-purple-700 mb-2 flex items-center">
+                    <i class="fa-solid fa-gamepad mr-3"></i> Arena Permainan Edukasi
+                </h2>
+                <p class="text-slate-600 text-sm md:text-base">Selesaikan 5 jenis permainan edukatif untuk mengumpulkan skor & membuka lencana penghargaan!</p>
+            </div>
+
+            <!-- Selector Mini Games -->
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-2">
+                <button onclick="selectGame('game-openthebox')" id="btn-game-openthebox" class="game-select-btn p-3 bg-purple-600 text-white font-bold text-xs md:text-sm rounded-2xl shadow transition">
+                    📦 Open Box
+                </button>
+                <button onclick="selectGame('game-dragdrop')" id="btn-game-dragdrop" class="game-select-btn p-3 bg-slate-200 text-slate-700 font-bold text-xs md:text-sm rounded-2xl shadow transition">
+                    🎯 Drag & Drop
+                </button>
+                <button onclick="selectGame('game-fillblank')" id="btn-game-fillblank" class="game-select-btn p-3 bg-slate-200 text-slate-700 font-bold text-xs md:text-sm rounded-2xl shadow transition">
+                    ✏️ Isi Rumpang
+                </button>
+                <button onclick="selectGame('game-match')" id="btn-game-match" class="game-select-btn p-3 bg-slate-200 text-slate-700 font-bold text-xs md:text-sm rounded-2xl shadow transition">
+                    🔗 Menjodohkan
+                </button>
+                <button onclick="selectGame('game-tf')" id="btn-game-tf" class="game-select-btn p-3 bg-slate-200 text-slate-700 font-bold text-xs md:text-sm rounded-2xl shadow transition">
+                    ✔️ Benar/Salah
+                </button>
+            </div>
+
+            <!-- GAME 1: OPEN THE BOX -->
+            <div id="game-openthebox" class="game-container custom-card rounded-3xl p-6 space-y-6">
+                <div class="flex justify-between items-center border-b pb-3">
+                    <h3 class="font-bold text-lg text-purple-700 flex items-center"><i class="fa-solid fa-box-open mr-2"></i> Aktivitas 1: Open the Box (Kotak Rahasia)</h3>
+                    <span class="text-xs bg-purple-100 text-purple-800 font-bold px-3 py-1 rounded-full">Level: Mudah</span>
+                </div>
+                <p class="text-sm text-slate-600">Klik salah satu kotak misteri di bawah untuk menjawab pertanyaan mengenai kesepakatan sekolah!</p>
+                
+                <div class="grid grid-cols-2 md:grid-cols-5 gap-4" id="box-grid">
+                    <!-- Dynamic Boxes Rendered via JS -->
+                </div>
+
+                <!-- Card Pertanyaan Box -->
+                <div id="box-question-card" class="hidden bg-purple-50 border-2 border-purple-300 rounded-2xl p-5 text-center space-y-3 shadow-inner">
+                    <h4 id="box-q-title" class="font-bold text-purple-900 text-lg">Pertanyaan Kotak #1</h4>
+                    <p id="box-q-text" class="text-slate-700 font-medium text-base">Isi pertanyaan...</p>
+                    <div id="box-options" class="grid grid-cols-1 md:grid-cols-2 gap-2 max-w-md mx-auto pt-2"></div>
+                    <div id="box-feedback" class="text-xs font-bold mt-2 p-2 rounded-xl"></div>
+                </div>
+            </div>
+
+            <!-- GAME 2: DRAG AND DROP (Dengan alternatif klik) -->
+            <div id="game-dragdrop" class="game-container hidden custom-card rounded-3xl p-6 space-y-6">
+                <div class="flex justify-between items-center border-b pb-3">
+                    <h3 class="font-bold text-lg text-purple-700 flex items-center"><i class="fa-solid fa-hand-pointer mr-2"></i> Aktivitas 2: Kelompokkan Sikap</h3>
+                    <span class="text-xs bg-blue-100 text-blue-800 font-bold px-3 py-1 rounded-full">Level: Sedang</span>
+                </div>
+                <p class="text-sm text-slate-600">Klik pilihan sikap di bawah, lalu klik kotak tujuan (Mematuhi atau Melanggar) untuk menempatkannya!</p>
+
+                <!-- Cards pool -->
+                <div class="bg-slate-100 p-4 rounded-2xl border-2 border-dashed border-slate-300 min-h-[90px]">
+                    <span class="text-xs font-bold text-slate-400 block mb-2">Pilihan Sikap (Klik untuk memilih):</span>
+                    <div id="drag-items" class="flex flex-wrap gap-2"></div>
+                </div>
+
+                <!-- Target Zones -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div id="zone-taat" onclick="handleZoneClick('taat')" class="bg-emerald-50 border-2 border-emerald-300 rounded-2xl p-4 min-h-[160px] cursor-pointer hover:border-emerald-500 transition">
+                        <h4 class="font-bold text-emerald-800 text-center mb-2 flex items-center justify-center"><i class="fa-solid fa-circle-check text-emerald-500 mr-2"></i> Mematuhi Kesepakatan</h4>
+                        <div id="container-taat" class="space-y-2"></div>
+                    </div>
+                    <div id="zone-langgar" onclick="handleZoneClick('langgar')" class="bg-rose-50 border-2 border-rose-300 rounded-2xl p-4 min-h-[160px] cursor-pointer hover:border-rose-500 transition">
+                        <h4 class="font-bold text-rose-800 text-center mb-2 flex items-center justify-center"><i class="fa-solid fa-circle-xmark text-rose-500 mr-2"></i> Melanggar Kesepakatan</h4>
+                        <div id="container-langgar" class="space-y-2"></div>
+                    </div>
+                </div>
+                <button onclick="checkDragDrop()" class="btn-bounce w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-xl shadow-md">Periksa Jawaban Kelompok Sikap</button>
+            </div>
+
+            <!-- GAME 3: FILL IN THE BLANK -->
+            <div id="game-fillblank" class="game-container hidden custom-card rounded-3xl p-6 space-y-6">
+                <div class="flex justify-between items-center border-b pb-3">
+                    <h3 class="font-bold text-lg text-purple-700 flex items-center"><i class="fa-solid fa-pen mr-2"></i> Aktivitas 3: Isi Kalimat Rumpang</h3>
+                    <span class="text-xs bg-purple-100 text-purple-800 font-bold px-3 py-1 rounded-full">Level: Sedang</span>
+                </div>
+                <p class="text-sm text-slate-600">Lengkapi kalimat di bawah ini dengan mengetik kata kunci yang tepat!</p>
+
+                <div id="fill-questions-container" class="space-y-4"></div>
+                <button onclick="checkFillBlank()" class="btn-bounce w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-xl shadow-md">Cek Jawaban Isi Rumpang</button>
+            </div>
+
+            <!-- GAME 4: MENJODOHKAN -->
+            <div id="game-match" class="game-container hidden custom-card rounded-3xl p-6 space-y-6">
+                <div class="flex justify-between items-center border-b pb-3">
+                    <h3 class="font-bold text-lg text-purple-700 flex items-center"><i class="fa-solid fa-link mr-2"></i> Aktivitas 4: Menjodohkan Pasangan</h3>
+                    <span class="text-xs bg-amber-100 text-amber-800 font-bold px-3 py-1 rounded-full">Level: Menantang</span>
+                </div>
+                <p class="text-sm text-slate-600">Klik item di kolom kiri, lalu klik pasangannya di kolom kanan!</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div id="match-left" class="space-y-3"></div>
+                    <div id="match-right" class="space-y-3"></div>
+                </div>
+                <button onclick="checkMatching()" class="btn-bounce w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-xl shadow-md">Periksa Jodoh Kata</button>
+            </div>
+
+            <!-- GAME 5: BENAR ATAU SALAH -->
+            <div id="game-tf" class="game-container hidden custom-card rounded-3xl p-6 space-y-6">
+                <div class="flex justify-between items-center border-b pb-3">
+                    <h3 class="font-bold text-lg text-purple-700 flex items-center"><i class="fa-solid fa-check-double mr-2"></i> Aktivitas 5: Benar atau Salah</h3>
+                    <span class="text-xs bg-emerald-100 text-emerald-800 font-bold px-3 py-1 rounded-full">Level: Cepat</span>
+                </div>
+                <p class="text-sm text-slate-600">Tentukan apakah pernyataan berikut **BENAR** atau **SALAH**!</p>
+
+                <div id="tf-questions-container" class="space-y-4"></div>
+                <button onclick="checkTF()" class="btn-bounce w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-xl shadow-md">Periksa Benar/Salah</button>
+            </div>
+        </section>
+
+        <!-- 📝 TAB: KUIS & TANTANGAN CEPAT -->
+        <section id="tab-kuis" class="tab-content hidden space-y-6">
+            <div class="bg-rose-50 border-2 border-rose-200 rounded-3xl p-6 shadow-sm">
+                <h2 class="text-2xl md:text-3xl font-extrabold text-rose-700 mb-2 flex items-center">
+                    <i class="fa-solid fa-stopwatch mr-3"></i> Kuis Evaluasi & Tantangan Cepat
+                </h2>
+                <p class="text-slate-600 text-sm md:text-base">Uji pemahamanmu secara menyeluruh dengan kuis pilihan ganda dan mode timer kilat!</p>
+            </div>
+
+            <!-- Mode Switcher Kuis -->
+            <div class="flex space-x-3">
+                <button onclick="switchQuizMode('pg')" id="btn-mode-pg" class="px-4 py-2.5 rounded-xl font-bold text-sm bg-rose-600 text-white shadow">Pilihan Ganda (5 Soal)</button>
+                <button onclick="switchQuizMode('speed')" id="btn-mode-speed" class="px-4 py-2.5 rounded-xl font-bold text-sm bg-slate-200 text-slate-700 shadow">⚡ Tantangan Cepat Timer</button>
+            </div>
+
+            <!-- MODE 1: PILIHAN GANDA STANDARD -->
+            <div id="quiz-pg-view" class="custom-card rounded-3xl p-6 space-y-6">
+                <div id="pg-container" class="space-y-6"></div>
+                <button onclick="submitPGQuiz()" class="btn-bounce w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-3.5 rounded-xl text-lg shadow-md">Kirim Semua Jawaban Kuis</button>
+            </div>
+
+            <!-- MODE 2: TANTANGAN CEPAT TIMER -->
+            <div id="quiz-speed-view" class="hidden custom-card rounded-3xl p-6 space-y-6 text-center">
+                <div id="speed-start-screen" class="space-y-4 py-6">
+                    <i class="fa-solid fa-bolt text-6xl text-amber-500 animate-bounce"></i>
+                    <h3 class="text-2xl font-bold text-slate-800">Tantangan Cepat 30 Detik!</h3>
+                    <p class="text-sm text-slate-600 max-w-md mx-auto">Jawab sebanyak mungkin pertanyaan seputar aturan dan kesepakatan kelas sebelum waktu habis!</p>
+                    <button onclick="startSpeedChallenge()" class="btn-bounce bg-amber-500 hover:bg-amber-600 text-white font-bold text-lg px-8 py-3 rounded-2xl shadow-lg">Mulai Tantangan Kilat!</button>
+                </div>
+
+                <div id="speed-game-screen" class="hidden space-y-4">
+                    <div class="flex justify-between items-center bg-slate-100 p-3 rounded-2xl border">
+                        <span class="font-bold text-rose-600 text-lg"><i class="fa-solid fa-clock mr-1"></i> Sisa Waktu: <span id="timer-count">30</span>s</span>
+                        <span class="font-bold text-emerald-600 text-lg">Skor Cepat: <span id="speed-score">0</span></span>
+                    </div>
+                    <div class="p-6 bg-amber-50 rounded-2xl border-2 border-amber-200">
+                        <p id="speed-question-text" class="text-lg font-bold text-slate-800 mb-4">Soal akan muncul di sini...</p>
+                        <div id="speed-options" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 🏆 TAB: HASIL & LENCANA -->
+        <section id="tab-hasil" class="tab-content hidden space-y-6">
+            <div class="bg-amber-50 border-2 border-amber-200 rounded-3xl p-6 text-center shadow-sm">
+                <h2 class="text-3xl font-extrabold text-amber-700 mb-2">🏆 Papan Penghargaan Siswa</h2>
+                <p class="text-slate-600 text-sm md:text-base">Berikut adalah hasil pencapaian belajar dan koleksi lencana kehormatan yang berhasil kamu raih!</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Total Score Summary -->
+                <div class="custom-card rounded-3xl p-6 text-center flex flex-col justify-center items-center">
+                    <div class="w-24 h-24 bg-amber-100 rounded-full flex items-center justify-center text-amber-500 text-4xl mb-3 shadow-inner">
+                        <i class="fa-solid fa-trophy"></i>
+                    </div>
+                    <span class="text-xs text-slate-400 font-bold uppercase tracking-wider">Total Skor Belajar</span>
+                    <h3 id="final-total-score" class="text-4xl font-extrabold text-amber-600 my-1">0</h3>
+                    <p class="text-xs text-slate-500 font-medium" id="motivation-msg">Ayo selesaikan lebih banyak aktivitas!</p>
+                </div>
+
+                <!-- Badges Display -->
+                <div class="md:col-span-2 custom-card rounded-3xl p-6 space-y-4">
+                    <h3 class="font-bold text-slate-800 text-lg flex items-center">
+                        <i class="fa-solid fa-medal text-amber-500 mr-2"></i> Koleksi Lencana Kehormatan
+                    </h3>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3" id="badge-grid">
+                        <!-- Badges dynamically rendered -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Refleksi Diri Pembelajaran -->
+            <div class="custom-card rounded-3xl p-6 border-2 border-indigo-200 bg-indigo-50/50 space-y-3">
+                <h3 class="font-bold text-indigo-900 text-lg flex items-center">
+                    <i class="fa-solid fa-heart mr-2 text-rose-500"></i> Refleksi Diri Siswa
+                </h3>
+                <p class="text-sm text-slate-700">
+                    Setelah mempelajari materi kesepakatan sekolah, janji positif apa yang ingin kamu lakukan di kelas besok pagi?
+                </p>
+                <textarea id="reflection-text" rows="3" placeholder="Tuliskan janjimu di sini, contoh: Saya berjanji akan mendengarkan saat guru/teman berbicara dan selalu menjaga kebersihan kelas..." class="w-full p-3 rounded-xl border-2 border-indigo-200 text-sm focus:ring-2 focus:ring-indigo-400 focus:outline-none"></textarea>
+                <button onclick="saveReflection()" class="btn-bounce bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow">Simpan Refleksi Saya</button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="text-center py-4 text-xs text-slate-500 mt-auto border-t bg-white/50">
+        Media Pembelajaran Interaktif SD Kelas 3 • Pendidikan Pancasila: Kesepakatan Bersama di Sekolahku
+    </footer>
+
+    <!-- JAVASCRIPT LOGIC & AUDIO SYNTHESIZER -->
+    <script>
+        // ==========================================
+        // AUDIO SYNTHESIZER (Web Audio API)
+        // ==========================================
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        function playSound(type) {
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            if (type === 'correct') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
+                osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.3); // A5
+                gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.3);
+            } else if (type === 'wrong') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(220, audioCtx.currentTime); // A3
+                osc.frequency.exponentialRampToValueAtTime(130.81, audioCtx.currentTime + 0.3); // C4
+                gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.3);
+            } else if (type === 'click') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.05);
+            }
+        }
+
+        // ==========================================
+        // STATE MANAGEMENT
+        // ==========================================
+        let globalScore = 0;
+        let badgesEarned = new Set();
+        let selectedDragCard = null;
+
+        const badgeList = [
+            { id: 'b1', name: 'Pelopor Kesepakatan', icon: 'fa-handshake', desc: 'Selesaikan Open the Box', color: 'bg-emerald-100 text-emerald-600' },
+            { id: 'b2', name: 'Siswa Disiplin', icon: 'fa-shield-halved', desc: 'Selesaikan Kelompok Sikap', color: 'bg-blue-100 text-blue-600' },
+            { id: 'b3', name: 'Penyelaras Kata', icon: 'fa-pen-ruler', desc: 'Selesaikan Isi Rumpang', color: 'bg-purple-100 text-purple-600' },
+            { id: 'b4', name: 'Sahabat Rukun', icon: 'fa-users', desc: 'Selesaikan Menjodohkan', color: 'bg-amber-100 text-amber-600' },
+            { id: 'b5', name: 'Teladan Sekolah', icon: 'fa-star', desc: 'Selesaikan Benar/Salah', color: 'bg-rose-100 text-rose-600' },
+            { id: 'b6', name: 'Juara Kilat', icon: 'fa-bolt', desc: 'Capai 40 poin Tantangan Cepat', color: 'bg-yellow-100 text-yellow-600' }
+        ];
+
+        // ==========================================
+        // INITIALIZATION & NAVIGATION
+        // ==========================================
+        window.onload = function() {
+            initOpenTheBox();
+            initDragDrop();
+            initFillBlank();
+            initMatching();
+            initTF();
+            initPGQuiz();
+            renderBadges();
+            updateProgress();
+        };
+
+        function switchTab(tabId) {
+            playSound('click');
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById('tab-' + tabId).classList.remove('hidden');
+
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('bg-amber-600');
+            });
+            const activeNav = document.getElementById('nav-' + tabId);
+            if(activeNav) activeNav.classList.add('bg-amber-600');
+        }
+
+        function showSubMateri(materiId) {
+            playSound('click');
+            document.querySelectorAll('.submateri-card').forEach(el => el.classList.add('hidden'));
+            document.getElementById(materiId).classList.remove('hidden');
+
+            document.querySelectorAll('.submateri-btn').forEach(btn => {
+                btn.classList.remove('bg-amber-500', 'text-white');
+                btn.classList.add('bg-slate-200', 'text-slate-700');
+            });
+            const activeBtn = document.getElementById('subnav-' + materiId);
+            activeBtn.classList.remove('bg-slate-200', 'text-slate-700');
+            activeBtn.classList.add('bg-amber-500', 'text-white');
+        }
+
+        function addScore(points) {
+            globalScore += points;
+            document.getElementById('global-score').innerText = globalScore;
+            document.getElementById('final-total-score').innerText = globalScore;
+            updateMotivationMsg();
+        }
+
+        function unlockBadge(badgeId) {
+            if(!badgesEarned.has(badgeId)) {
+                badgesEarned.add(badgeId);
+                document.getElementById('badge-count').innerText = badgesEarned.size;
+                renderBadges();
+                updateProgress();
+                confetti({ particleCount: 60, spread: 70, origin: { y: 0.7 } });
+            }
+        }
+
+        function updateProgress() {
+            let totalBadges = badgeList.length;
+            let percent = Math.min(100, Math.round((badgesEarned.size / totalBadges) * 100));
+            document.getElementById('overall-progress').style.width = percent + '%';
+            document.getElementById('progress-percent').innerText = percent;
+            document.getElementById('progress-badge-text').innerText = `${badgesEarned.size}/${totalBadges}`;
+        }
+
+        function updateMotivationMsg() {
+            const msgEl = document.getElementById('motivation-msg');
+            if(globalScore >= 150) {
+                msgEl.innerText = "Luar Biasa! Kamu adalah Teladan Kesepakatan Sekolah!";
+            } else if(globalScore >= 80) {
+                msgEl.innerText = "Bagus Sekali! Teruskan semangat belajarmu!";
+            } else {
+                msgEl.innerText = "Ayo selesaikan lebih banyak aktivitas untuk mendapat poin!";
+            }
+        }
+
+        // ==========================================
+        // SIMULASI SEBAB-AKIBAT
+        // ==========================================
+        function runSimulation() {
+            playSound('click');
+            const piket = document.getElementById('sim-piket').value;
+            const bicara = document.getElementById('sim-bicara').value;
+            const musyawarah = document.getElementById('sim-musyawarah').value;
+
+            const display = document.getElementById('sim-display');
+            const icon = document.getElementById('sim-icon');
+            const title = document.getElementById('sim-title');
+            const desc = document.getElementById('sim-desc');
+            const badge = document.getElementById('sim-status-badge');
+            const feedback = document.getElementById('sim-feedback');
+
+            if(piket === 'taat' && bicara === 'santun' && musyawarah === 'mufakat') {
+                display.className = "custom-card rounded-3xl p-6 flex flex-col justify-between transition-all duration-500 bg-emerald-50 border-2 border-emerald-300";
+                icon.className = "text-7xl mb-4 text-emerald-500 animate-pulse-slow";
+                icon.innerHTML = '<i class="fa-solid fa-face-laugh-beam"></i>';
+                title.innerText = "Suasana Kelas Sangat Nyaman!";
+                title.className = "text-2xl font-bold text-emerald-800 mb-2";
+                desc.innerText = "Karena semua warga kelas taat pada kesepakatan bersama, kelas menjadi bersih, tenang, dan semua siswa belajar dengan gembira!";
+                badge.innerText = "Kelas Ideal";
+                badge.className = "px-3 py-1 bg-emerald-200 text-emerald-800 rounded-full font-bold text-xs";
+                feedback.innerText = "💡 Hubungan Sebab-Akibat: Mematuhi kesepakatan membuat lingkungan harmonis.";
+            } else if(piket === 'langgar' && bicara === 'gaduh' && musyawarah === 'paksakan') {
+                display.className = "custom-card rounded-3xl p-6 flex flex-col justify-between transition-all duration-500 bg-rose-50 border-2 border-rose-300";
+                icon.className = "text-7xl mb-4 text-rose-500 animate-bounce";
+                icon.innerHTML = '<i class="fa-solid fa-face-frown-open"></i>';
+                title.innerText = "Kelas Menjadi Kacau & Buruk!";
+                title.className = "text-2xl font-bold text-rose-800 mb-2";
+                desc.innerText = "Ruang kelas kotor, pelajaran terganggu karena suara bising, dan sering terjadi pertengkaran antar teman!";
+                badge.innerText = "Perlu Perbaikan";
+                badge.className = "px-3 py-1 bg-rose-200 text-rose-800 rounded-full font-bold text-xs";
+                feedback.innerText = "💡 Hubungan Sebab-Akibat: Melanggar aturan merugikan diri sendiri dan teman.";
+            } else {
+                display.className = "custom-card rounded-3xl p-6 flex flex-col justify-between transition-all duration-500 bg-amber-50 border-2 border-amber-300";
+                icon.className = "text-7xl mb-4 text-amber-500";
+                icon.innerHTML = '<i class="fa-solid fa-face-meh"></i>';
+                title.innerText = "Suasana Kelas Kurang Seimbang";
+                title.className = "text-2xl font-bold text-amber-800 mb-2";
+                desc.innerText = "Beberapa aturan berjalan baik, tetapi masih ada rasa tidak nyaman karena beberapa siswa belum konsisten mematuhinya.";
+                badge.innerText = "Cukup Baik";
+                badge.className = "px-3 py-1 bg-amber-200 text-amber-800 rounded-full font-bold text-xs";
+                feedback.innerText = "💡 Hubungan Sebab-Akibat: Perlu kerja sama semua pihak agar kelas tetap harmonis.";
+            }
+        }
+
+        // ==========================================
+        // GAMES CONTROLLER
+        // ==========================================
+        function selectGame(gameId) {
+            playSound('click');
+            document.querySelectorAll('.game-container').forEach(el => el.classList.add('hidden'));
+            document.getElementById(gameId).classList.remove('hidden');
+
+            document.querySelectorAll('.game-select-btn').forEach(btn => {
+                btn.classList.remove('bg-purple-600', 'text-white');
+                btn.classList.add('bg-slate-200', 'text-slate-700');
+            });
+            const activeBtn = document.getElementById('btn-' + gameId);
+            activeBtn.classList.remove('bg-slate-200', 'text-slate-700');
+            activeBtn.classList.add('bg-purple-600', 'text-white');
+        }
+
+        // AKTIVITAS 1: OPEN THE BOX
+        const boxData = [
+            { q: "Kesepakatan kelas harus dibuat oleh...", opt: ["Guru saja", "Siswa dan Guru Bersama", "Kepala Sekolah"], ans: 1, explanation: "Kesepakatan bersama dibuat oleh seluruh warga kelas agar adil." },
+            { q: "Aturan datang tepat waktu melatih sikap...", opt: ["Disiplin", "Sombong", "Terburu-buru"], ans: 0, explanation: "Tepat waktu membentuk kebiasaan disiplin sejak dini." },
+            { q: "Manfaat utama menjaga kebersihan kelas bersama adalah...", opt: ["Kelas bersih & nyaman", "Lelah", "Mendapat hadiah uang"], ans: 0, explanation: "Kelas yang bersih membuat belajar terasa nyaman." },
+            { q: "Tujuan melakukan musyawarah adalah...", opt: ["Mencapai kesepakatan bersama", "Menang sendiri", "Mencari musuh"], ans: 0, explanation: "Musyawarah bertujuan menghasilkan keputusan yang disetujui bersama." },
+            { q: "Saat teman menyampaikan pendapat, kita sebaiknya...", opt: ["Mendengarkan dengan santun", "Mengejeknya", "Bicara sendiri"], ans: 0, explanation: "Menghargai pendapat teman adalah wujud cermin Pancasila." }
+        ];
+        let openedBoxes = 0;
+
+        function initOpenTheBox() {
+            const grid = document.getElementById('box-grid');
+            grid.innerHTML = '';
+            boxData.forEach((box, idx) => {
+                grid.innerHTML += `
+                    <button id="box-btn-${idx}" onclick="openBox(${idx})" class="btn-bounce bg-gradient-to-br from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-white font-extrabold text-2xl h-24 rounded-2xl shadow-md flex flex-col items-center justify-center space-y-1">
+                        <i class="fa-solid fa-gift text-3xl"></i>
+                        <span class="text-xs font-semibold">Kotak #${idx+1}</span>
+                    </button>
+                `;
+            });
+        }
+
+        function openBox(index) {
+            playSound('click');
+            const card = document.getElementById('box-question-card');
+            const item = boxData[index];
+            card.classList.remove('hidden');
+
+            document.getElementById('box-q-title').innerText = `Kotak Rahasia #${index+1}`;
+            document.getElementById('box-q-text').innerText = item.q;
+            document.getElementById('box-feedback').innerText = '';
+            document.getElementById('box-feedback').className = "text-xs font-bold mt-2 p-2 rounded-xl hidden";
+
+            const optsDiv = document.getElementById('box-options');
+            optsDiv.innerHTML = '';
+            item.opt.forEach((o, oIdx) => {
+                optsDiv.innerHTML += `
+                    <button onclick="answerBox(${index}, ${oIdx})" class="bg-white hover:bg-purple-100 border-2 border-purple-300 p-2.5 rounded-xl font-semibold text-sm text-slate-800 transition">
+                        ${o}
+                    </button>
+                `;
+            });
+        }
+
+        function answerBox(bIdx, selectedOpt) {
+            const item = boxData[bIdx];
+            const feedback = document.getElementById('box-feedback');
+            const btn = document.getElementById(`box-btn-${bIdx}`);
+
+            feedback.classList.remove('hidden');
+            if(selectedOpt === item.ans) {
+                playSound('correct');
+                feedback.className = "text-xs font-bold mt-2 p-2 rounded-xl bg-emerald-100 text-emerald-800 border border-emerald-300";
+                feedback.innerText = "✨ Benar! " + item.explanation;
+                btn.className = "bg-emerald-500 text-white font-extrabold text-2xl h-24 rounded-2xl shadow opacity-60 cursor-not-allowed flex flex-col items-center justify-center space-y-1";
+                btn.disabled = true;
+                btn.innerHTML = `<i class="fa-solid fa-check-circle text-3xl"></i><span class="text-xs">Selesai</span>`;
+                addScore(10);
+                openedBoxes++;
+                if(openedBoxes >= 5) unlockBadge('b1');
+            } else {
+                playSound('wrong');
+                feedback.className = "text-xs font-bold mt-2 p-2 rounded-xl bg-rose-100 text-rose-800 border border-rose-300";
+                feedback.innerText = "❌ Kurang tepat. Coba lagi!";
+            }
+        }
+
+        // AKTIVITAS 2: DRAG AND DROP
+        const dragItemsData = [
+            { id: 'd1', text: 'Melaksanakan piket kelas', type: 'taat' },
+            { id: 'd2', text: 'Membuang sampah di kolong meja', type: 'langgar' },
+            { id: 'd3', text: 'Mendengarkan penjelasan guru', type: 'taat' },
+            { id: 'd4', text: 'Menyela saat teman berbicara', type: 'langgar' },
+            { id: 'd5', text: 'Antre tertib saat di kantin', type: 'taat' }
+        ];
+
+        function initDragDrop() {
+            const pool = document.getElementById('drag-items');
+            pool.innerHTML = '';
+            dragItemsData.forEach(item => {
+                pool.innerHTML += `
+                    <div id="${item.id}" onclick="selectDragCard('${item.id}')" class="drag-card bg-white border-2 border-purple-300 hover:border-purple-500 p-2.5 rounded-xl font-bold text-xs cursor-pointer shadow-sm transition">
+                        ${item.text}
+                    </div>
+                `;
+            });
+        }
+
+        function selectDragCard(id) {
+            playSound('click');
+            document.querySelectorAll('.drag-card').forEach(el => el.classList.remove('ring-4', 'ring-purple-400'));
+            selectedDragCard = id;
+            document.getElementById(id).classList.add('ring-4', 'ring-purple-400');
+        }
+
+        function handleZoneClick(zoneType) {
+            if(!selectedDragCard) return;
+            playSound('click');
+            const cardEl = document.getElementById(selectedDragCard);
+            const targetContainer = document.getElementById('container-' + zoneType);
+
+            targetContainer.appendChild(cardEl);
+            cardEl.classList.remove('ring-4', 'ring-purple-400');
+            selectedDragCard = null;
+        }
+
+        function checkDragDrop() {
+            let correct = 0;
+            dragItemsData.forEach(item => {
+                const el = document.getElementById(item.id);
+                if(el && el.parentElement && el.parentElement.id === 'container-' + item.type) {
+                    correct++;
+                }
+            });
+
+            if(correct === 5) {
+                playSound('correct');
+                alert("🎉 Luar Biasa! Semua pilihan sikap dikelompokkan dengan benar!");
+                addScore(25);
+                unlockBadge('b2');
+            } else {
+                playSound('wrong');
+                alert(`Kamu menjawab ${correct} dari 5 dengan benar. Periksa kembali yuk!`);
+            }
+        }
+
+        // AKTIVITAS 3: FILL IN THE BLANK
+        const fillData = [
+            { q: "Kesepakatan kelas dibuat melalui proses _________.", ans: "musyawarah", exp: "Musyawarah dilakukan untuk mencapai kesepakatan bersama." },
+            { q: "Siswa yang mematuhi aturan akan merasa _________ di kelas.", ans: "nyaman", exp: "Aturan menciptakan suasana yang aman dan nyaman." },
+            { q: "Saat orang lain berbicara, kita sebaiknya _________.", ans: "mendengarkan", exp: "Mendengarkan adalah bentuk rasa menghormati." },
+            { q: "Merapikan alat belajar setelah dipakai adalah contoh rasa _________.", ans: "tanggung jawab", exp: "Tanggung jawab harus dimiliki setiap siswa." },
+            { q: "Aturan kelas dibuat untuk kepentingan _________.", ans: "bersama", exp: "Aturan bukan untuk individu saja, tapi untuk seluruh kelas." }
+        ];
+
+        function initFillBlank() {
+            const container = document.getElementById('fill-questions-container');
+            container.innerHTML = '';
+            fillData.forEach((item, idx) => {
+                let parts = item.q.split("_________");
+                container.innerHTML += `
+                    <div class="bg-purple-50 p-4 rounded-2xl border border-purple-200 text-sm font-semibold space-y-1">
+                        <div>
+                            <span>${idx+1}. ${parts[0]}</span>
+                            <input type="text" id="fill-input-${idx}" class="mx-1 p-1 px-2 border-2 border-purple-300 rounded-lg text-center font-bold text-purple-700 w-36 focus:outline-none focus:border-purple-500" placeholder="ketik jawaban">
+                            <span>${parts[1]}</span>
+                        </div>
+                        <div id="fill-feedback-${idx}" class="text-xs font-bold pt-1"></div>
+                    </div>
+                `;
+            });
+        }
+
+        function checkFillBlank() {
+            let correct = 0;
+            fillData.forEach((item, idx) => {
+                const input = document.getElementById(`fill-input-${idx}`).value.trim().toLowerCase();
+                const fb = document.getElementById(`fill-feedback-${idx}`);
+                if(input === item.ans) {
+                    fb.innerText = "✔️ Benar! " + item.exp;
+                    fb.className = "text-xs font-bold text-emerald-600";
+                    correct++;
+                } else {
+                    fb.innerText = `❌ Kurang tepat. Kunci: ${item.ans}`;
+                    fb.className = "text-xs font-bold text-rose-600";
+                }
+            });
+
+            if(correct === 5) {
+                playSound('correct');
+                addScore(25);
+                unlockBadge('b3');
+            } else {
+                playSound('wrong');
+            }
+        }
+
+        // AKTIVITAS 4: MENJODOHKAN
+        const matchLeftData = [
+            { id: 'm1', text: 'Piket Kebersihan' },
+            { id: 'm2', text: 'Musyawarah Kelas' },
+            { id: 'm3', text: 'Tepat Waktu' },
+            { id: 'm4', text: 'Bahasa Sopan' },
+            { id: 'm5', text: 'Melanggar Aturan' }
+        ];
+        const matchRightData = [
+            { targetId: 'm3', text: 'Melatih kedisiplinan' },
+            { targetId: 'm1', text: 'Kelas bersih & sehat' },
+            { targetId: 'm5', text: 'Mendapat konsekuensi' },
+            { targetId: 'm2', text: 'Diskusi mencari mufakat' },
+            { targetId: 'm4', text: 'Menjaga kerukunan teman' }
+        ];
+        let selectedLeft = null;
+        let userMatches = {};
+
+        function initMatching() {
+            const leftContainer = document.getElementById('match-left');
+            const rightContainer = document.getElementById('match-right');
+            leftContainer.innerHTML = '';
+            rightContainer.innerHTML = '';
+
+            matchLeftData.forEach(item => {
+                leftContainer.innerHTML += `
+                    <button id="m-left-${item.id}" onclick="selectMatchLeft('${item.id}')" class="w-full text-left p-3 bg-amber-50 border-2 border-amber-300 rounded-xl font-bold text-xs md:text-sm text-slate-800 hover:bg-amber-100 transition">
+                        ${item.text}
+                    </button>
+                `;
+            });
+
+            matchRightData.forEach((item, idx) => {
+                rightContainer.innerHTML += `
+                    <button id="m-right-${idx}" onclick="selectMatchRight('${item.targetId}', ${idx})" class="w-full text-left p-3 bg-sky-50 border-2 border-sky-300 rounded-xl font-bold text-xs md:text-sm text-slate-800 hover:bg-sky-100 transition">
+                        ${item.text}
+                    </button>
+                `;
+            });
+        }
+
+        function selectMatchLeft(id) {
+            playSound('click');
+            selectedLeft = id;
+            document.querySelectorAll('#match-left button').forEach(b => b.classList.remove('ring-4', 'ring-amber-400'));
+            document.getElementById(`m-left-${id}`).classList.add('ring-4', 'ring-amber-400');
+        }
+
+        function selectMatchRight(targetId, rIdx) {
+            if(!selectedLeft) return;
+            playSound('click');
+            userMatches[selectedLeft] = targetId;
+
+            const leftBtn = document.getElementById(`m-left-${selectedLeft}`);
+            const rightBtn = document.getElementById(`m-right-${rIdx}`);
+
+            leftBtn.classList.remove('ring-4', 'ring-amber-400');
+            leftBtn.classList.add('bg-emerald-100', 'border-emerald-400');
+            rightBtn.classList.add('bg-emerald-100', 'border-emerald-400');
+
+            selectedLeft = null;
+        }
+
+        function checkMatching() {
+            let correct = 0;
+            matchLeftData.forEach(item => {
+                if(userMatches[item.id] === item.id) {
+                    correct++;
+                }
+            });
+
+            if(correct === 5) {
+                playSound('correct');
+                alert("🎉 Hebat! Semua Pasangan Kata Tepat!");
+                addScore(25);
+                unlockBadge('b4');
+            } else {
+                playSound('wrong');
+                alert(`Kamu berhasil menjodohkan ${correct} dari 5 pasangan.`);
+            }
+        }
+
+        // AKTIVITAS 5: BENAR ATAU SALAH
+        const tfData = [
+            { q: "Kesepakatan kelas boleh dilanggar jika tidak ada guru di kelas.", ans: false, exp: "Kesepakatan harus dipatuhi kapan saja dan di mana saja." },
+            { q: "Menerima hasil keputusan musyawarah adalah sikap terpuji.", ans: true, exp: "Menerima keputusan bersama menunjukkan sikap bijaksana." },
+            { q: "Aturan kelas hanya berlaku untuk murid laki-laki saja.", ans: false, exp: "Aturan berlaku adil untuk seluruh siswa dan warga kelas." },
+            { q: "Mematuhi aturan piket membuat kelas terhindar dari kuman penyakit.", ans: true, exp: "Kelas bersih menjaga kesehatan semua murid." },
+            { q: "Setiap siswa berhak menyampaikan pendapatnya secara santun.", ans: true, exp: "Setiap warga kelas memiliki hak berbicara yang sama." }
+        ];
+        let tfAnswers = {};
+
+        function initTF() {
+            const container = document.getElementById('tf-questions-container');
+            container.innerHTML = '';
+            tfData.forEach((item, idx) => {
+                container.innerHTML += `
+                    <div class="bg-emerald-50 p-4 rounded-2xl border border-emerald-200 flex flex-col md:flex-row justify-between items-center gap-3">
+                        <p class="font-semibold text-sm text-slate-800">${idx+1}. ${item.q}</p>
+                        <div class="flex space-x-2 shrink-0">
+                            <button id="tf-btn-t-${idx}" onclick="answerTF(${idx}, true)" class="px-4 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs rounded-xl transition">BENAR</button>
+                            <button id="tf-btn-f-${idx}" onclick="answerTF(${idx}, false)" class="px-4 py-1.5 bg-rose-500 hover:bg-rose-600 text-white font-bold text-xs rounded-xl transition">SALAH</button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function answerTF(idx, choice) {
+            playSound('click');
+            tfAnswers[idx] = choice;
+            const btnT = document.getElementById(`tf-btn-t-${idx}`);
+            const btnF = document.getElementById(`tf-btn-f-${idx}`);
+
+            btnT.classList.remove('ring-4', 'ring-emerald-300');
+            btnF.classList.remove('ring-4', 'ring-rose-300');
+
+            if(choice) btnT.classList.add('ring-4', 'ring-emerald-300');
+            else btnF.classList.add('ring-4', 'ring-rose-300');
+        }
+
+        function checkTF() {
+            let correct = 0;
+            tfData.forEach((item, idx) => {
+                if(tfAnswers[idx] === item.ans) correct++;
+            });
+
+            if(correct === 5) {
+                playSound('correct');
+                alert("🎉 Sempurna! Semua pertanyaan Benar/Salah terjawab tepat!");
+                addScore(25);
+                unlockBadge('b5');
+            } else {
+                playSound('wrong');
+                alert(`Skor kamu: ${correct} dari 5. Periksa lagi pilihanmu!`);
+            }
+        }
+
+        // ==========================================
+        // KUIS EVALUASI (5 PILIHAN GANDA)
+        // ==========================================
+        const pgData = [
+            { q: "Apa yang dimaksud dengan kesepakatan bersama di kelas?", opt: ["Aturan sepihak buatan satu murid", "Keputusan yang disetujui bersama oleh warga kelas", "Perintah dari penjaga sekolah"], ans: 1 },
+            { q: "Manfaat utama mematuhi jadwal piket kebersihan adalah...", opt: ["Ruang kelas bersih dan belajar jadi nyaman", "Bisa bolos jam pelajaran", "Mendapat pujian berlebihan"], ans: 0 },
+            { q: "Sikap yang baik ketika terjadi musyawarah pemilihan ketua kelas adalah...", opt: ["Memaksa teman memilih sahabat kita", "Menghargai setiap pendapat dan menerima hasil voting", "Marah jika calon kita kalah"], ans: 1 },
+            { q: "Jika kita tidak sengaja melanggar kesepakatan kelas, hal yang harus dilakukan adalah...", opt: ["Pura-pura tidak tahu", "Jujur, meminta maaf, dan siap menerima konsekuensi", "Menuduh teman lain"], ans: 1 },
+            { q: "Contoh sikap mematuhi aturan saat guru sedang mengajar di kelas adalah...", opt: ["Mendengarkan dengan penuh perhatian", "Mengobrol keras dengan teman", "Bermain mainan sendiri"], ans: 0 }
+        ];
+
+        function initPGQuiz() {
+            const container = document.getElementById('pg-container');
+            container.innerHTML = '';
+            pgData.forEach((item, idx) => {
+                let optionsHtml = '';
+                item.opt.forEach((o, oIdx) => {
+                    optionsHtml += `
+                        <label class="flex items-center space-x-2 bg-slate-50 p-3 rounded-xl border border-slate-200 cursor-pointer hover:bg-rose-50 transition">
+                            <input type="radio" name="pg-q-${idx}" value="${oIdx}" class="text-rose-600 focus:ring-rose-400">
+                            <span class="text-xs md:text-sm font-medium text-slate-700">${o}</span>
+                        </label>
+                    `;
+                });
+
+                container.innerHTML += `
+                    <div class="space-y-2 bg-white p-4 rounded-2xl border-2 border-slate-100 shadow-sm">
+                        <p class="font-bold text-slate-800 text-sm md:text-base">${idx+1}. ${item.q}</p>
+                        <div class="grid grid-cols-1 gap-2">
+                            ${optionsHtml}
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function submitPGQuiz() {
+            let correct = 0;
+            pgData.forEach((item, idx) => {
+                const selected = document.querySelector(`input[name="pg-q-${idx}"]:checked`);
+                if(selected && parseInt(selected.value) === item.ans) {
+                    correct++;
+                }
+            });
+
+            let earnedXP = correct * 10;
+            if(correct > 0) playSound('correct');
+            else playSound('wrong');
+
+            addScore(earnedXP);
+            alert(`🎉 Kuis Selesai!\nKamu menjawab ${correct} dari 5 soal dengan benar.\nKamu mendapatkan +${earnedXP} XP!`);
+        }
+
+        // ==========================================
+        // TANTANGAN CEPAT WITH TIMER
+        // ==========================================
+        let speedTimer;
+        let timeLeft = 30;
+        let speedScore = 0;
+        const speedQuestions = [
+            { q: "Kesepakatan kelas dibuat secara?", opt: ["Bersama", "Sendiri", "Dipaksa"], ans: 0 },
+            { q: "Piket kelas membuat ruangan jadi?", opt: ["Bersih", "Kotor", "Bisa dipakai tidur"], ans: 0 },
+            { q: "Musyawarah bertujuan mencapai?", opt: ["Mufakat", "Pertengkaran", "Kekacauan"], ans: 0 },
+            { q: "Datang sekolah tepat waktu adalah sikap?", opt: ["Disiplin", "Malas", "Terpaksa"], ans: 0 },
+            { q: "Saat teman bicara kita harus?", opt: ["Mendengarkan", "Bicara sendiri", "Tidur"], ans: 0 }
+        ];
+
+        function switchQuizMode(mode) {
+            playSound('click');
+            if(mode === 'pg') {
+                document.getElementById('quiz-pg-view').classList.remove('hidden');
+                document.getElementById('quiz-speed-view').classList.add('hidden');
+                document.getElementById('btn-mode-pg').className = "px-4 py-2.5 rounded-xl font-bold text-sm bg-rose-600 text-white shadow";
+                document.getElementById('btn-mode-speed').className = "px-4 py-2.5 rounded-xl font-bold text-sm bg-slate-200 text-slate-700 shadow";
+            } else {
+                document.getElementById('quiz-pg-view').classList.add('hidden');
+                document.getElementById('quiz-speed-view').classList.remove('hidden');
+                document.getElementById('btn-mode-speed').className = "px-4 py-2.5 rounded-xl font-bold text-sm bg-rose-600 text-white shadow";
+                document.getElementById('btn-mode-pg').className = "px-4 py-2.5 rounded-xl font-bold text-sm bg-slate-200 text-slate-700 shadow";
+            }
+        }
+
+        function startSpeedChallenge() {
+            playSound('click');
+            document.getElementById('speed-start-screen').classList.add('hidden');
+            document.getElementById('speed-game-screen').classList.remove('hidden');
+            timeLeft = 30;
+            speedScore = 0;
+            document.getElementById('speed-score').innerText = speedScore;
+            document.getElementById('timer-count').innerText = timeLeft;
+
+            nextSpeedQuestion();
+
+            speedTimer = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timer-count').innerText = timeLeft;
+                if(timeLeft <= 0) {
+                    clearInterval(speedTimer);
+                    playSound('correct');
+                    alert(`⏱️ Waktu Habis!\nSkor Akhir Tantangan Cepat: ${speedScore}`);
+                    addScore(speedScore);
+                    if(speedScore >= 40) unlockBadge('b6');
+                    document.getElementById('speed-start-screen').classList.remove('hidden');
+                    document.getElementById('speed-game-screen').classList.add('hidden');
+                }
+            }, 1000);
+        }
+
+        let currentSpeedAns = 0;
+        function nextSpeedQuestion() {
+            const rand = Math.floor(Math.random() * speedQuestions.length);
+            const item = speedQuestions[rand];
+            document.getElementById('speed-question-text').innerText = item.q;
+            currentSpeedAns = item.ans;
+
+            const optsDiv = document.getElementById('speed-options');
+            optsDiv.innerHTML = '';
+            item.opt.forEach((o, idx) => {
+                optsDiv.innerHTML += `
+                    <button onclick="answerSpeed(${idx})" class="p-3 bg-white hover:bg-amber-100 border-2 border-amber-300 rounded-xl font-bold text-slate-800 transition">
+                        ${o}
+                    </button>
+                `;
+            });
+        }
+
+        function answerSpeed(idx) {
+            if(idx === currentSpeedAns) {
+                playSound('correct');
+                speedScore += 10;
+                document.getElementById('speed-score').innerText = speedScore;
+            } else {
+                playSound('wrong');
+            }
+            nextSpeedQuestion();
+        }
+
+        // ==========================================
+        // RENDER BADGES & REFLEKSI
+        // ==========================================
+        function renderBadges() {
+            const grid = document.getElementById('badge-grid');
+            grid.innerHTML = '';
+            badgeList.forEach(b => {
+                const isEarned = badgesEarned.has(b.id);
+                grid.innerHTML += `
+                    <div class="p-3.5 rounded-2xl border-2 flex flex-col items-center text-center space-y-1 transition-all ${isEarned ? 'bg-white border-amber-300 shadow-sm scale-100' : 'bg-slate-100 border-slate-200 opacity-40 scale-95'}">
+                        <div class="w-11 h-11 rounded-full flex items-center justify-center text-xl ${b.color}">
+                            <i class="fa-solid ${b.icon}"></i>
+                        </div>
+                        <span class="font-bold text-xs text-slate-800 mt-1">${b.name}</span>
+                        <span class="text-[10px] text-slate-500">${b.desc}</span>
+                    </div>
+                `;
+            });
+        }
+
+        function saveReflection() {
+            const val = document.getElementById('reflection-text').value.trim();
+            if(val.length > 5) {
+                playSound('correct');
+                confetti({ particleCount: 50, spread: 60 });
+                alert("🌟 Terima kasih! Janji refleksi dirimu telah tersimpan. Mari wujudkan kelas yang damai bersama!");
+                addScore(15);
+            } else {
+                playSound('wrong');
+                alert("Tuliskan janjimu terlebih dahulu ya!");
+            }
+        }
+    </script>
+</body>
+</html>
